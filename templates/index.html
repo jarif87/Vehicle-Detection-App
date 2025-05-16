@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vehicle Detection & Classification</title>
+  <!-- Materialize CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-wrapper container">
+      <a class="brand-logo center">Vehicle Detection</a>
+      <ul class="right">
+        <li>Made by Sadik Al Jarif</li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container">
+    <div class="row">
+      <!-- Upload Card -->
+      <div class="col s12 m6">
+        <div class="card upload-card">
+          <div class="card-content">
+            <span class="card-title">Upload Image</span>
+            <form action="/" method="post" enctype="multipart/form-data" id="upload-form">
+              <div class="file-field input-field">
+                <div class="btn btn-custom">
+                  <span>Browse</span>
+                  <input type="file" name="image_upload" id="image_upload" accept="image/*">
+                </div>
+                <div class="file-path-wrapper">
+                  <input class="file-path validate" type="text" placeholder="Select an image">
+                </div>
+              </div>
+              <!-- Image Preview -->
+              <div class="preview-container center">
+                <img id="image-preview" src="{{ url_for('static', filename='images/white_bg.jpg') }}" alt="Image Preview" class="responsive-img">
+              </div>
+              <div class="center">
+                <button type="submit" class="btn-large btn-custom waves-effect waves-light">Process</button>
+              </div>
+            </form>
+            {% if error %}
+              <p class="error-text center">{{ error }}</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Result Card -->
+      <div class="col s12 m6">
+        <div class="card result-card">
+          <div class="card-content center">
+            <span class="card-title">Result</span>
+            <img src="{{ url_for('static', filename=full_filename) }}" alt="Processed Image" class="responsive-img result-image">
+            {% if pred %}
+              <p class="result-text">{{ pred }}</p>
+            {% else %}
+              <p class="result-text">Upload an image to see results</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div id="loading">
+    <div class="preloader-wrapper big active">
+      <div class="spinner-layer spinner-green">
+        <div class="circle-clipper left">
+          <div class="circle"></div>
+        </div>
+        <div class="gap-patch">
+          <div class="circle"></div>
+        </div>
+        <div class="circle-clipper right">
+          <div class="circle"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <script>
+    // Image preview
+    document.getElementById('image_upload').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      const preview = document.getElementById('image-preview');
+      if (file) {
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = 'block';
+      } else {
+        preview.src = "{{ url_for('static', filename='images/white_bg.jpg') }}";
+      }
+      // Update file input text
+      const fileName = this.value.split('\\').pop();
+      this.nextElementSibling.querySelector('input').value = fileName;
+    });
+
+    // Show loading spinner on form submit
+    document.getElementById('upload-form').addEventListener('submit', function() {
+      document.getElementById('loading').style.display = 'flex';
+    });
+  </script>
+</body>
+</html>
